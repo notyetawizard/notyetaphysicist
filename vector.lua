@@ -15,19 +15,39 @@ function rangeWrap(n, h, l)
 end
 
 --Vectors and points are to be passed as tables;
-point = {x = 0, y = 0}
-vector = {point, point}
+pointZero = {x = 0, y = 0}
+vectorZero = {pointZero, pointZero}
 
 function angle(v)
     return math.atan2(v[2].y - v[1].y, v[2].x - v[1].x)
 end
 
 function magnitude(v)
-    return math.sqrt((v[1].x -v[2].x)^2 + (v[1].y - v[2].y)^2)
+    return math.sqrt((v[2].x - v[1].x)^2 + (v[2].y - v[1].y)^2)
 end
 
 function pointExtend(p, a, m)
     return  {x = math.cos(a) * m + p.x, y = math.sin(a) * m + p.y}
+end
+
+function pointOrder(points)
+    local list = {}
+    for pk, pv in ipairs(points) do
+        local pm = magnitude({pointZero, pv})
+        local check = false
+        for lk, lv in ipairs(list) do
+            lm = magnitude({pointZero, lv})
+            if pm <= lm then
+                table.insert(list, lk, pv)
+                check = true
+                break 
+            end
+        end
+        if check == false then
+            table.insert(list, pv)
+        end
+    end
+    return list
 end
 
 function trim(max, v)
@@ -72,6 +92,8 @@ print(rxs, "lines are parallel")
 print(qpxr, "and are colinear")
         --and are colinear
             --I don't think I really need to know the lengths, so probably just return the averaged center between the overlapping portion
+            
+            --order points by distance from origin, average the center two.
             return true
         else
 print(qpxr, "but don't intersect")
@@ -89,7 +111,7 @@ equivilent = add(q, mul(s, {x = u, y = u}))
 print(equivilent.x, equivilent.y, "at")
             return true, add(p, mul(r, {x = t, y = t}))
         else
-        print(t, u, "but don't intersect")
+print(t, u, "but don't intersect")
         --but don't intersect
             return false
         end
@@ -99,7 +121,7 @@ end
 --test cases!
 --from https://martin-thoma.com/how-to-check-if-two-line-segments-intersect/
 
---lines are perpendicular
+--lines are perpendic3ular
 --intersect({{x = 0, y = 1}, {x = 2, y = 1}}, {{x = 1, y = 0}, {x = 1, y = 2}})
 
 --lines are parallel, but don't touch
@@ -116,7 +138,7 @@ end
 --colinear, line 1 is just a point.
 --intersect({{x = 0, y = 0}, {x = 0, y = 0}}, {{x = 0, y = 0}, {x = 6, y = 0}})
 
---colinear, but don't touch
+--colinear, disjoint
 --FAILED! Need to check lengths and such too!
 intersect({{x = -2, y = -2}, {x = 4, y = 4}}, {{x = 6, y = 6}, {x = 10, y = 10}})
 
